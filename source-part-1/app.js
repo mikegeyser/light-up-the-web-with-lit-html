@@ -1,6 +1,13 @@
 import { html, render } from './node_modules/lit-html/lit-html.js';
 
-let todos = [];
+let todos = [
+  { title: 'Initialise the app', completed: true },
+  { title: 'Create a todo', completed: true },
+  { title: 'List the todos', completed: true },
+  { title: 'Mark a todo as completed', completed: false },
+  { title: '????', completed: false },
+  { title: 'Profit!', completed: false }
+];
 
 let handleAddTodo = (e) => {
   if (e.key !== 'Enter') return;

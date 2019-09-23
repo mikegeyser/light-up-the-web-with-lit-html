@@ -2,13 +2,13 @@
 
 > npm init
 
-> npm install -D http-server
+> npm install -D owc-dev-server
 
 > npm install lit-html
 
 > npm install todomvc-app-css todomvc-common
 
-`"start" : "http-server"`
+`"start" : "owc-dev-server"`
 
 Create `index.html` and scaffold `html:5`.
 
@@ -29,14 +29,18 @@ Create `app.js` and link it in the index.html.
 ```
 
 ```js
-let gdg = 'Google Developer Group';
-let hello = `<h1>Hello ${gdg}! It is currently ${new Date().toTimeString()}</h1>`;
+let devfest = 'DevFest';
+let hello = `<h1>Hello ${devfest}! It is currently ${new Date().toTimeString()}</h1>`;
 
 document.body.append(hello);
 ```
 
 ```js
-let wat = (staticParts, dynamicParts) => document.createElement('h1');
+let html = (staticParts, dynamicParts) => {
+  let el = document.createElement('h1');
+  el.innerText = 'WAT?!';
+  return el;
+};
 ```
 
 # 3. Lit and render
@@ -64,7 +68,7 @@ let app = () => html``;
 render(app(), document.body);
 ```
 
-> Snippet: _html_app
+> Snippet: \_html_app
 
 ```html
 <section class="todoapp">
@@ -76,27 +80,61 @@ render(app(), document.body);
 </section>
 ```
 
-# 5. Add Todo
+# 5. Show the list
+
+> Snippet: \_data
+
+```js
+  { title: 'Initialise the app', completed: true },
+  { title: 'Create a todo', completed: true },
+  { title: 'List the todos', completed: true },
+  { title: 'Mark a todo as completed', completed: false },
+  { title: '????', completed: false },
+  { title: 'Profit!', completed: false },
+```
+
+```html
+<ul class="todo-list">
+  ${todos.map((todo) => viewTodo(todo))}
+</ul>
+```
+
+```js
+let viewTodo = (todo) => html``;
+```
+
+> Snippet: \_html_view_todo
+
+```html
+<li>
+  <div class="view">
+    <input class="toggle" type="checkbox" />
+    <label></label>
+  </div>
+</li>
+```
+
+```js
+<label>${todo.title}</label>
+```
+
+# 6. Add Todo
 
 ```js
 let addTodo = () => html``;
 ```
 
-> Snippet: _html_add_todo
+> Snippet: \_html_add_todo
 
 ```html
 <input class="new-todo" placeholder="What needs to be done?" autofocus="" />
 ```
 
 ```html
-${addTodo()}
-```
-
-```html
 @keyup="${handleAddTodo}"
 ```
 
-> Snippet: _handleAddTodo
+> Snippet: \_handleAddTodo
 
 ```js
 let handleAddTodo = (e) => {
@@ -118,94 +156,19 @@ let update = () => render(app(), document.body);
 update();
 ```
 
-# 6. Show the list
-
-> Snippet: _data
-
-```js
-  { title: 'Initialise the app', completed: true },
-  { title: 'Create a todo', completed: true },
-  { title: 'List the todos', completed: true },
-  { title: 'Mark a todo as completed', completed: false },
-  { title: '????', completed: false },
-  { title: 'Profit!', completed: false },
-```
-
 ```html
-<ul class="todo-list">
-  ${todos.map((todo) => viewTodo(todo))}
-</ul>
+${addTodo()}
 ```
 
-```js
-let viewTodo = (todo) => html``;
-```
-
-> Snippet: _html_view_todo
-
-```html
-<li>
-  <div class="view">
-    <input class="toggle" type="checkbox" />
-    <label></label>
-  </div>
-</li>
-```
-
-```js
-<label>${todo.title}</label>
-```
-
-# 7. Mark a todo as done
-
-```html
-?checked="${todo.completed}" 
-@click=${(e) => handleToggleCompleted(todo)}
-```
-
-```js
-let handleToggleCompleted = (todo) => (todo.completed = !todo.completed);
-```
-
-# 8. Don't mutate state
-
-```js
-todos = [
-  ...todos,
-  {
-    title: e.target.value,
-    completed: false
-  }
-];
-```
-
-```js
-let handleToggleCompleted = (todo) =>
-  (todos = todos.map((t) => {
-    if (t !== todo) return t;
-
-    return {
-      ...todo,
-      completed: !todo.completed
-    };
-  }));
-```
-
-# 9. Web Components!
-
-> npm install -D owc-dev-server
+# 7. Web Components!
 
 > npm install lit-element
-
-```
-    "start": "owc-dev-server"
-```
 
 ```js
 import { html, LitElement } from 'lit-element';
 ```
 
-> Snippet: _component
+> Snippet: \_component
 
 ```js
 class App extends LitElement {
@@ -248,11 +211,60 @@ return {
   }
 ```
 
-# 10. Add Todo
+# 8. View Todo
+
+Create `view-todo.js`.
+
+> Snippet: \_component
+
+```js
+import { html, LitElement } from 'lit-element';
+
+class ViewTodo extends LitElement {
+  createRenderRoot() {
+    return this;
+  }
+
+  static get properties() {
+    return {};
+  }
+
+  render() {
+    return html``;
+  }
+}
+
+window.customElements.define('view-todo', ViewTodo);
+```
+
+Copy render method.
+
+```js
+<label>${this.todo.title}</label>
+```
+
+Add the corresponding side on `app.js`.
+
+```js
+import './view-todo.js';
+```
+
+```js
+    ${this.todos.map(
+        (todo) =>
+        html`
+            <view-todo
+            .todo="${todo}"
+            ></view-todo>
+        `
+    )}
+```
+
+# 9. Add Todo
 
 > Create file `add-todo.js`.
 
-> Snippet: _component
+> Snippet: \_component
 
 ```js
 import { html, LitElement } from 'lit-element';
@@ -274,13 +286,9 @@ class AddTodo extends LitElement {
 window.customElements.define('add-todo', AddTodo);
 ```
 
-Copy render method.
-
 ```html
 @keyup="${(e) => this.handleAddTodo(e)}"
 ```
-
-Copy handleAddTodo.
 
 ```js
   handleAddTodo(e) {
@@ -319,47 +327,37 @@ Add the corresponding side on `app.js`.
 import './add-todo.js';
 ```
 
-# 11. View Todo
-
-Create `view-todo.js`.
-
-> Snippet: _component
-
-```js
-import { html, LitElement } from 'lit-element';
-
-class ViewTodo extends LitElement {
-  createRenderRoot() {
-    return this;
-  }
-
-  static get properties() {
-    return {};
-  }
-
-  render() {
-    return html``;
-  }
-}
-
-window.customElements.define('view-todo', ViewTodo);
-```
-
-Copy render method.
+# 7. Mark a todo as done
 
 ```js
     ?checked="${this.todo.completed}"
-    @click=${(e) => this.handleToggleCompleted(this.todo)}
+    @click=${(e) => this.toggleCompleted(this.todo)}
 ```
 
 ```js
-<label>${this.todo.title}</label>
+  static get properties() {
+    return {
+      todo: Object,
+      toggleCompleted: Object
+    };
+  }
 ```
 
-Add the corresponding side on `app.js`.
+```html
+<view-todo
+  .todo="${todo}"
+  .toggleCompleted="${(todo) => this.toggleCompleted(todo)}"
+></view-todo>
+```
 
 ```js
-  handleToggleCompleted(todo) {
+  toggleCompleted(todo) {
+    //
+  }
+```
+
+```js
+  toggleCompleted(todo) {
     this.todos = this.todos.map((t) => {
       if (t !== todo) return t;
 
@@ -371,18 +369,4 @@ Add the corresponding side on `app.js`.
   }
 ```
 
-```js
-import './view-todo.js';
-```
 
-```js
-    ${this.todos.map(
-        (todo) =>
-        html`
-            <view-todo
-            .todo="${todo}"
-            .handleToggleCompleted="${(todo) => this.handleToggleCompleted(todo)}"
-            ></view-todo>
-        `
-    )}
-```

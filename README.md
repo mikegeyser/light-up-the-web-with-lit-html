@@ -2,13 +2,13 @@
 
 > npm init
 
-> npm install -D owc-dev-server
+> npm install -D es-dev-server
 
 > npm install lit-html
 
 > npm install todomvc-app-css todomvc-common
 
-`"start" : "owc-dev-server"`
+`"start" : "es-dev-server --node-resolve"`
 
 Create `index.html` and scaffold `html:5`.
 

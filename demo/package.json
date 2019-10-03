@@ -1,0 +1,21 @@
+{
+  "name": "demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "lit-element": "^2.2.1",
+    "lit-html": "^1.1.2",
+    "owc-dev-server": "^1.0.1",
+    "todomvc-app-css": "^2.3.0",
+    "todomvc-common": "^1.0.5"
+  },
+  "devDependencies": {
+    "es-dev-server": "^1.18.3"
+  },
+  "scripts": {
+    "start": "es-dev-server --node-resolve"
+  },
+  "author": "",
+  "license": "ISC"
+}]

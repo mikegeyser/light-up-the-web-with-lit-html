@@ -90,7 +90,44 @@
       "window.customElements.define('${2:element-name}', ${1:ClassName});"
     ]
   },
-
+  "Toggle completed: Add the html.": {
+    "scope": "",
+    "prefix": "_toggle_1",
+    "body": [
+      "?checked=\"\\${this.todo.completed}\" ",
+      "@click=\"\\${(e) => this.toggleCompleted(this.todo)}\""
+    ],
+    "description": "Toggle completed: Add the html."
+  },
+  "Toggle completed: Add the property.": {
+    "scope": "",
+    "prefix": "_toggle_2",
+    "body": ["toggleCompleted: Object"],
+    "description": "Toggle completed: Add the property."
+  },
+  "Toggle completed: Bind the property.": {
+    "scope": "",
+    "prefix": "_toggle_3",
+    "body": [".toggleCompleted=\"\\${(todo) => this.toggleCompleted(todo)}\""],
+    "description": "Toggle completed: Bind the property."
+  },
+  "Toggle completed: Implement the method.": {
+    "scope": "",
+    "prefix": "_toggle_4",
+    "body": [
+      "toggleCompleted(todo) {",
+      "  this.todos = this.todos.map((t) => {",
+      "    if (t !== todo) return t;",
+      "",
+      "    return {",
+      "      ...t,",
+      "      completed: !todo.completed",
+      "    };",
+      "  });",
+      "}"
+    ],
+    "description": "Toggle completed: Implement the method."
+  },
   "Backup for step 1": {
     "scope": "",
     "prefix": "?1_index_html",

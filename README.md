@@ -16,21 +16,17 @@ Create `index.html` and scaffold `html:5`.
 <link rel="stylesheet" href="./node_modules/todomvc-app-css/index.css" />
 ```
 
-```html
-<h1>Hello GDG!</h1>
-```
-
-# 2. Template literals
-
 Create `app.js` and link it in the index.html.
 
 ```html
 <script type="module" src="./app.js"></script>
 ```
 
+# 2. Template literals
+
 ```js
-let devfest = 'DevFest';
-let hello = `<h1>Hello ${devfest}! It is currently ${new Date().toTimeString()}</h1>`;
+let conference = 'MS Ignite';
+let hello = `<h1>Hello ${conference}! It is currently ${new Date().toTimeString()}</h1>`;
 
 document.body.append(hello);
 ```
@@ -46,26 +42,72 @@ let html = (staticParts, dynamicParts) => {
 # 3. Lit and render
 
 ```js
-import { html, render } from './node_modules/lit-html/lit-html.js';
+import { html, render } from 'lit-html';
 
-let gdg = 'Google Developer Group';
+let conference = 'MS Ignite';
 
 let hello = html`
-  <h1>Hello ${gdg}!</h1>
+  <h1>Hello ${conference}!</h1>
   It is currently <b>${new Date().toTimeString()}</b>
 `;
 
 render(hello, document.body);
 ```
 
-# 4. TodoMVC App
+# 4. LitElement
 
 ```js
-let todos = [];
+import { html, LitElement } from 'lit-element';
+```
 
-let app = () => html``;
+> Snippet: \_component
 
-render(app(), document.body);
+```js
+class MyApp extends LitElement {
+  static get properties() {
+    return {};
+  }
+
+  constructor() {
+    super();
+  }
+
+  render() {
+    return html`
+     
+    `;
+  }
+}
+
+window.customElements.define('my-app', App);
+```
+
+```js
+this.conference = 'MS Ignite';
+```
+
+```html
+ <h1>Hello ${this.conference}!</h1> It is currently <b>${new Date().toTimeString()}</b>
+```
+
+```html
+<my-app></my-app>
+```
+
+# 5. TodoMVC App
+
+```js
+return {
+  todos: Array
+};
+```
+
+```js
+  constructor() {
+    super();
+
+    this.todos = [ ];
+  }
 ```
 
 > Snippet: \_html_app
@@ -80,7 +122,13 @@ render(app(), document.body);
 </section>
 ```
 
-# 5. Show the list
+```js
+  createRenderRoot() {
+    return this;
+  }
+```
+
+# 6. Show the list
 
 > Snippet: \_data
 
@@ -95,123 +143,15 @@ render(app(), document.body);
 
 ```html
 <ul class="todo-list">
-  ${todos.map((todo) => viewTodo(todo))}
+  ${this.todos.map((todo) => html`
+    <view-todo .todo="${todo}"></view-todo>
+  `)}
 </ul>
 ```
 
 ```js
-let viewTodo = (todo) => html``;
+import './view-todo';
 ```
-
-> Snippet: \_html_view_todo
-
-```html
-<li>
-  <div class="view">
-    <input class="toggle" type="checkbox" />
-    <label></label>
-  </div>
-</li>
-```
-
-```js
-<label>${todo.title}</label>
-```
-
-# 6. Add Todo
-
-```js
-let addTodo = () => html``;
-```
-
-> Snippet: \_html_add_todo
-
-```html
-<input class="new-todo" placeholder="What needs to be done?" autofocus="" />
-```
-
-```html
-@keyup="${handleAddTodo}"
-```
-
-> Snippet: \_handleAddTodo
-
-```js
-let handleAddTodo = (e) => {
-  if (e.key !== 'Enter') return;
-
-  todos.push({
-    title: e.target.value,
-    completed: false
-  });
-
-  e.target.value = '';
-
-  update();
-};
-```
-
-```js
-let update = () => render(app(), document.body);
-update();
-```
-
-```html
-${addTodo()}
-```
-
-# 7. Web Components!
-
-> npm install lit-element
-
-```js
-import { html, LitElement } from 'lit-element';
-```
-
-> Snippet: \_component
-
-```js
-class App extends LitElement {
-  createRenderRoot() {
-    return this;
-  }
-
-  static get properties() {
-    return {};
-  }
-
-  render() {
-    return html``;
-  }
-}
-
-window.customElements.define('todo-app', App);
-```
-
-> Copy paste the render method, and change `todo` to `this.todo`.
-
-```js
-return {
-  todos: Array
-};
-```
-
-```js
-  constructor() {
-    super();
-
-    this.todos = [
-      { title: 'Initialise the app', completed: true },
-      { title: 'Create a todo', completed: true },
-      { title: 'List the todos', completed: true },
-      { title: 'Mark a todo as completed', completed: false },
-      { title: '????', completed: false },
-      { title: 'Profit!', completed: false }
-    ];
-  }
-```
-
-# 8. View Todo
 
 Create `view-todo.js`.
 
@@ -237,30 +177,28 @@ class ViewTodo extends LitElement {
 window.customElements.define('view-todo', ViewTodo);
 ```
 
-Copy render method.
+```js
+static get properties() {
+  return { todo: Object };
+}
+```
+
+> Snippet: \_html_view_todo
+
+```html
+<li>
+  <div class="view">
+    <input class="toggle" type="checkbox" />
+    <label></label>
+  </div>
+</li>
+```
 
 ```js
 <label>${this.todo.title}</label>
 ```
 
-Add the corresponding side on `app.js`.
-
-```js
-import './view-todo.js';
-```
-
-```js
-    ${this.todos.map(
-        (todo) =>
-        html`
-            <view-todo
-            .todo="${todo}"
-            ></view-todo>
-        `
-    )}
-```
-
-# 9. Add Todo
+# 7. Add Todo
 
 > Create file `add-todo.js`.
 
@@ -286,9 +224,17 @@ class AddTodo extends LitElement {
 window.customElements.define('add-todo', AddTodo);
 ```
 
+> Snippet: \_html_add_todo
+
+```html
+<input class="new-todo" placeholder="What needs to be done?" autofocus="" />
+```
+
 ```html
 @keyup="${(e) => this.handleAddTodo(e)}"
 ```
+
+> Snippet: \_handleAddTodo
 
 ```js
   handleAddTodo(e) {
@@ -327,7 +273,7 @@ Add the corresponding side on `app.js`.
 import './add-todo.js';
 ```
 
-# 7. Mark a todo as done
+# 8. Mark a todo as done
 
 ```js
     ?checked="${this.todo.completed}"
@@ -344,10 +290,7 @@ import './add-todo.js';
 ```
 
 ```html
-<view-todo
-  .todo="${todo}"
-  .toggleCompleted="${(todo) => this.toggleCompleted(todo)}"
-></view-todo>
+<view-todo .todo="${todo}" .toggleCompleted="${(todo) => this.toggleCompleted(todo)}"></view-todo>
 ```
 
 ```js
@@ -368,5 +311,3 @@ import './add-todo.js';
     });
   }
 ```
-
-
